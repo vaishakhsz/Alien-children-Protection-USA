@@ -39,7 +39,7 @@ Copy the IP Address printed in the Colab output (e.g., 35.243.x.x).
 Click the Localtunnel Link provided in the output.
 
 Paste the IP into the "Endpoint IP" box and hit Submit.
-Note: The cleaned excel sheet will be automatically downloaded
+
 
 Option 2: Local Execution (VS Code / Terminal)
 Ensure you have the main script and the .csv data in the same folder.
