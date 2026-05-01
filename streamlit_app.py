@@ -11,35 +11,36 @@ def load_and_calculate():
     # 1. Load the raw data
     data = pd.read_csv('HHS_Unaccompanied_Alien_Children_Program.csv')
     
-    # 2. Data Cleaning
+    # 2. Convert Date
     data['Date'] = pd.to_datetime(data['Date'])
     
-    # Clean numeric columns (remove commas if they exist)
+    # 3. FORCE Numeric Conversion (The fix for your TypeError)
     numeric_cols = [
         'Children in CBP custody', 
         'Children in HHS Care', 
         'Children transferred out of CBP custody', 
-        'Children discharged from HHS Care'
+        'Children discharged from HHS Care',
+        'Children apprehended and placed in CBP custody*'
     ]
+    
     for col in numeric_cols:
+        # Remove commas and convert to numeric, forcing errors to NaN
         if data[col].dtype == 'object':
-            data[col] = data[col].str.replace(',', '').astype(float)
+            data[col] = data[col].str.replace(',', '', regex=True)
+        data[col] = pd.to_numeric(data[col], errors='coerce').fillna(0)
 
-    # 3. Feature Engineering (Creating the missing columns)
+    # 4. Feature Engineering
     data['Total_System_Load'] = data['Children in CBP custody'] + data['Children in HHS Care']
     
-    # Define Strain: Top 25% of load days
     load_threshold = data['Total_System_Load'].quantile(0.75)
     data['System_Strain'] = data['Total_System_Load'] > load_threshold
     
-    # Calculate Volatility (Standard Deviation over 7 days)
     data['Volatility_Index'] = data['Total_System_Load'].rolling(window=7).std().fillna(0)
     
-    # Calculate Cumulative Backlog
     data['Daily_Diff'] = data['Children transferred out of CBP custody'] - data['Children discharged from HHS Care']
     data['Cumulative_Backlog'] = data['Daily_Diff'].cumsum()
 
-    # 4. Global Stats
+    # 5. Global Stats
     stats = {
         'total_in_full': data['Children transferred out of CBP custody'].sum(),
         'total_out_full': data['Children discharged from HHS Care'].sum(),
@@ -96,21 +97,21 @@ tabs = st.tabs(["📊 Capacity", "🔄 Throughput", "⚠️ Strain Analysis"])
 with tabs[0]:
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("### Figure 1: Unified System Load")
+        st.markdown("### Unified System Load")
         fig1 = px.line(df, x='Date', y='Total_System_Load', color_discrete_sequence=['#2E86C1'])
         st.plotly_chart(fig1, use_container_width=True)
     with c2:
-        st.markdown("### Figure 2: Agency Responsibility")
+        st.markdown("### Agency Responsibility")
         fig2 = px.area(df, x='Date', y=['Children in CBP custody', 'Children in HHS Care'])
         st.plotly_chart(fig2, use_container_width=True)
 
 with tabs[1]:
-    st.markdown("### Figure 8: Cumulative Backlog Growth")
+    st.markdown("### Cumulative Backlog Growth")
     fig8 = px.line(df, x='Date', y='Cumulative_Backlog', color_discrete_sequence=['#C0392B'])
     st.plotly_chart(fig8, use_container_width=True)
 
 with tabs[2]:
-    st.markdown("### Figure 6: Identification of Acute Strain")
+    st.markdown("### Identification of Acute Strain")
     fig6 = px.line(df, x='Date', y='Total_System_Load', color_discrete_sequence=['#bdc3c7'])
     strain_pts = df[df['System_Strain']]
     fig6.add_trace(go.Scatter(x=strain_pts['Date'], y=strain_pts['Total_System_Load'], mode='markers', marker=dict(color='red'), name='Strain Event'))
