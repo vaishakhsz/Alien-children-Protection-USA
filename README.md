@@ -53,6 +53,9 @@ You can interact with this project in **four ways**:
   * `requirements.txt`
 
 * Run the notebook to generate the app, then launch:
+ ```bash
+pip install -r requirements.txt
+```
 
 ```bash
 streamlit run streamlit_app.py
