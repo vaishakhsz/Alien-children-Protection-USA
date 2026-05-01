@@ -43,8 +43,11 @@ Instant dashboard access
 🌐 Option 3: Streamlit Cloud (Public Interface)
 
 -Push project to GitHub
+
 -Go to Streamlit Cloud
+
 -Select repo + streamlit_app.py
+
 -Click Deploy
 ✅ Get a public shareable link
 ✅ No setup required for viewers
@@ -54,17 +57,21 @@ Instant dashboard access
 
 Open Google Colab
 -Upload:
+
 healthcare1_(1).ipynb
+
 HHS_Unaccompanied_Alien_Children_Program.csv
 
 -Run all cells
 
 -Access dashboard:
+
 Copy IP from output
 Open Localtunnel link
 Paste IP → Submit
 
 -Output:
+
 Clean dataset (UAC_Clean_Final.csv)
 Generated streamlit_app.py
 Streamlit dashboard
