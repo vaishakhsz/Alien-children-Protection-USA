@@ -8,16 +8,18 @@ from datetime import datetime
 st.set_page_config(page_title="HHS Operational Command", layout="wide", initial_sidebar_state="expanded")
 
 @st.cache_data
-def load_and_calculate():
-    # 1. Load data - Ensure this filename is exact in GitHub
+def load_and_process():
+    # 1. Load raw data
+    # Ensure this exact filename is in your GitHub
     raw_file = 'UAC_Clean_Final.csv'
     df_raw = pd.read_csv(raw_file)
 
-    # 2. DATA ENGINE (Verbatim from your notebook)
+    # 2. DATA ENGINE (Merged from your notebook)
     df = df_raw.dropna(subset=['Date']).copy()
     df['Date'] = pd.to_datetime(df['Date'])
     df = df.sort_values('Date').drop_duplicates(subset='Date')
 
+    # Fix the "Zero Bug" by stripping commas
     cols_to_fix = [
         'Children in CBP custody', 'Children in HHS Care',
         'Children apprehended and placed in CBP custody*',
@@ -29,18 +31,19 @@ def load_and_calculate():
             df[col] = df[col].astype(str).str.replace(',', '').str.strip()
         df[col] = pd.to_numeric(df[col], errors='coerce')
 
+    # Logic Analytics
     df = df.fillna(0)
     df['Total_System_Load'] = df['Children in CBP custody'] + df['Children in HHS Care']
     df['Net_Intake_Pressure'] = df['Children transferred out of CBP custody'] - df['Children discharged from HHS Care']
     df['Cumulative_Backlog'] = df['Net_Intake_Pressure'].cumsum()
 
-    # Strain Logic (Target: 69 Days)
+    # Strain Logic (Identification of the 136 critical days)
     load_75th = df['Total_System_Load'].quantile(0.75)
     volatility = df['Children apprehended and placed in CBP custody*'].rolling(window=7).std().fillna(0)
     df['System_Strain'] = (df['Total_System_Load'] > load_75th) & (volatility > volatility.quantile(0.75))
     df['Volatility_Index'] = volatility
 
-    # Pre-caching global stats for static display
+    # Global Stats
     total_in = df['Children transferred out of CBP custody'].sum()
     total_out = df['Children discharged from HHS Care'].sum()
 
@@ -48,15 +51,13 @@ def load_and_calculate():
         'total_in': total_in,
         'total_out': total_out,
         'ratio': total_in / total_out if total_out > 0 else 0,
-        'strain_sum': int(df['System_Strain'].sum()),
         'avg_load': df['Total_System_Load'].mean(),
-        'latest_hhs': df['Children in HHS Care'].iloc[-1],
         'min_date': df['Date'].min(),
         'max_date': df['Date'].max()
     }
     return df, stats
 
-df_full, stats = load_and_calculate()
+df_full, stats = load_and_process()
 
 # --- SIDEBAR ---
 with st.sidebar:
@@ -70,7 +71,7 @@ with st.sidebar:
     st.divider()
     st.success(f"Audit Status: {len(df_full)} Rows Cleaned")
 
-# Filter data
+# Filter
 if len(date_range) == 2:
     start_date, end_date = pd.to_datetime(date_range[0]), pd.to_datetime(date_range[1])
     df = df_full[(df_full['Date'] >= start_date) & (df_full['Date'] <= end_date)]
@@ -82,16 +83,16 @@ st.title("🛡️ HHS/CBP Operational Command Center")
 st.subheader("System Performance & Capacity Strain Analytics")
 st.divider()
 
-# --- INSTANT KPI METRICS (Matching your screenshot)[cite: 1] ---
+# --- KPI METRICS ---
 m1, m2, m3, m4 = st.columns(4)
-m1.metric("Active HHS Care", f"{stats['latest_hhs']:,.0f}", delta="+Fixed Thousand-Units")
+m1.metric("Active HHS Care", f"{df['Children in HHS Care'].iloc[-1]:,.0f}", delta="+Fixed Units")
 m2.metric("Discharge Ratio", f"{stats['ratio']:.2f}", delta="-26% vs Target", delta_color="red")
-m3.metric("Critical Strain Days", f"{stats['strain_sum']}", help="Days where Load & Volatility > 75th percentile")
-m4.metric("Mean System Load", f"{stats['avg_load']:.0f}")
+m3.metric("Critical Strain Days", f"{int(df['System_Strain'].sum())}", help="Days where Load & Volatility > 75th percentile")
+m4.metric("Mean System Load", f"{df['Total_System_Load'].mean():.0f}")
 
 st.divider()
 
-# --- VISUALIZATION SUITE ---
+# --- TABS (Figures 1-8) ---
 tabs = st.tabs(["📊 Capacity (Fig 1-4)", "🔄 Throughput (Fig 5 & 8)", "⚠️ Strain Analysis (Fig 6-7)"])
 
 with tabs[0]:
@@ -128,5 +129,7 @@ with tabs[2]:
     st.plotly_chart(fig6, use_container_width=True)
 
     st.markdown("### Figure 7: Care Load Volatility")
+    fig7 = px.line(df, x='Date', y='Volatility_Index', color_discrete_sequence=['#8E44AD'])
+    st.plotly_chart(fig7, use_container_width=True)
     fig7 = px.line(df, x='Date', y='Volatility_Index', color_discrete_sequence=['#8E44AD'])
     st.plotly_chart(fig7, use_container_width=True)
