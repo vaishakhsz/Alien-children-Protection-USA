@@ -30,21 +30,22 @@ Instant dashboard access
 
 💻 Option 2:### 🔧 Local Execution (VS Code / Terminal)
 
-1. Place the following files in the **same folder**:
+- Place the following files in the **same folder**:
    - `healthcare ipynb file`
    - `HHS_Unaccompanied_Alien_Children_Program.csv`
    - `requirements.txt`
 
-2. Run the script once to generate the app file:
+- Run the script once to generate the app file:
    ```bash
    python streamlit_app.py
 
 
 🌐 Option 3: Streamlit Cloud (Public Interface)
-Push project to GitHub
-Go to Streamlit Cloud
-Select repo + streamlit_app.py
-Click Deploy
+
+-Push project to GitHub
+-Go to Streamlit Cloud
+-Select repo + streamlit_app.py
+-Click Deploy
 ✅ Get a public shareable link
 ✅ No setup required for viewers
 
@@ -52,18 +53,18 @@ Click Deploy
 🔧Option 4: Execute Through Code (Google Colab) ( No installation required)
 
 Open Google Colab
-Upload:
+-Upload:
 healthcare1_(1).ipynb
 HHS_Unaccompanied_Alien_Children_Program.csv
 
-Run all cells
+-Run all cells
 
-Access dashboard:
+-Access dashboard:
 Copy IP from output
 Open Localtunnel link
 Paste IP → Submit
 
-Output:
+-Output:
 Clean dataset (UAC_Clean_Final.csv)
 Generated streamlit_app.py
 Streamlit dashboard
