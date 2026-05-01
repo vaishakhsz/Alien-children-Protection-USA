@@ -1,65 +1,93 @@
-🛡️ HHS/CBP Operational Command Center
+🛡️ HHS / CBP Operational Command Center
+Predictive Intelligence for the UAC Program
 
-Every year, thousands of children travel long distances—often alone—to reach the U.S. Southern Border. This project uses data to act like a "weather forecast" for the U.S. Southern Border. By predicting exactly how many children will arrive at shelters 7 days in advance, we can make sure there is always a bed, a doctor, and a safe path home waiting for them. 
-An automated Data Engineering Pipeline and Interactive Analytics Dashboard built to monitor and audit the HHS Unaccompanied Alien Children (UAC) Program. This project transforms raw government datasets into a high-fidelity "Command Center" for tracking system capacity and operational strain.
+Every year, thousands of children travel long distances—often alone—to reach the U.S. Southern Border.
+This project acts like a “weather forecast” for humanitarian operations, predicting how many children will arrive at shelters 7 days in advance—ensuring there is always a bed, a doctor, and a safe pathway forward.
+
+An automated Data Engineering Pipeline and Interactive Analytics Dashboard built to monitor and audit the HHS Unaccompanied Alien Children (UAC) Program.
+It transforms raw government datasets into a Command Center for tracking capacity, forecasting intake, and identifying system strain.
 
 🚀 Engineering & Automation Highlights
-Automated Data Export: Upon execution, the script automatically sanitizes the raw data and triggers an immediate download of the processed file (UAC_Clean_Final.csv), providing a clean dataset ready for external audit or SQL ingestion.
-
-Self-Generating Architecture: The main Python script acts as a deployment engine. It performs the ETL (Extract, Transform, Load) process and then dynamically writes the standalone streamlit_app.py web-interface code to the local directory.
-
-Data Sanitization (The "Comma Bug"): Implemented a regex-based cleaning pipeline to handle thousand-separator artifacts (e.g., converting "12,400" from a string to an integer) to ensure 100% calculation accuracy across all metrics.
-
-Operational Intelligence: Developed custom logic for System Strain Identification, defined as days where both total population load and intake volatility exceed the 75th percentile.
+⚙️ Automated ETL Pipeline – Cleans, processes, and exports structured data
+📤 Auto Data Export – Generates UAC_Clean_Final.csv for audit/SQL use
+🧹 Data Sanitization – Fixes comma-separated numbers ("12,400" → 12400)
+🧠 Self-Generating App – Generates streamlit_app.py from notebook/pipeline
+🚨 System Strain Detection – Flags high-risk days using percentile logic
 
 🛠️ Tech Stack
-
 Language: Python 3.10+
+Data: Pandas, NumPy
+Visualization: Plotly
+Dashboard: Streamlit
+Deployment: Localtunnel, Google Colab
 
-Analytics: Pandas, NumPy
+*How to Use*
+You can interact with this project in four ways:
 
-Visuals: Plotly Express & Graph Objects
+⚡ Option 1: Direct Access
+Open the deployed Streamlit link(steamlit interface hhs)
+Instant dashboard access
 
-Web Framework: Streamlit
+💻 Option 2:### 🔧 Local Execution (VS Code / Terminal)
 
-Deployment: Localtunnel / Google Colab
+1. Place the following files in the **same folder**:
+   - `healthcare ipynb file`
+   - `HHS_Unaccompanied_Alien_Children_Program.csv`
+   - `requirements.txt`
 
-⚡ How to Run
-
-Option 1: Google Colab (Fastest "No-Install" Method)
-Upload the Main Script and the HHS_Unaccompanied_Alien_Children_Program.csv to your Colab session storage.
-
-Run the script cells.
-
-Automatic Export: The cleaned CSV will download to your computer automatically once the data engine finishes processing.
-
-To Access the Dashboard:
-
-Copy the IP Address printed in the Colab output (e.g., 35.243.x.x).
-
-Click the Localtunnel Link provided in the output.
-
-Paste the IP into the "Endpoint IP" box and hit Submit.
+2. Run the script once to generate the app file:
+   ```bash
+   python streamlit_app.py
 
 
-Option 2: Local Execution (VS Code / Terminal)
-Ensure you have the main script and the .csv data in the same folder.
-
-Run the script once to generate the app file: python your_script_name.py
-
-Install dependencies: pip install streamlit pandas plotly numpy
-
-Launch the dashboard: streamlit run streamlit_app.py
-
-📊 Analytics Suite
-System Load Analysis: Unified tracking of Agency Responsibility (HHS vs. CBP).
-
-Monthly Throughput: Comparative bar charts for Intake vs. Discharge efficiency.
-
-Strain Detection: Visual markers for acute operational pressure events.
-
-Backlog Tracking: Cumulative growth visualization of net system pressure over time.
+🌐 Option 3: Streamlit Cloud (Public Interface)
+Push project to GitHub
+Go to Streamlit Cloud
+Select repo + streamlit_app.py
+Click Deploy
+✅ Get a public shareable link
+✅ No setup required for viewers
 
 
+🔧Option 4: Execute Through Code (Google Colab) ( No installation required)
 
-**NOTE : IN CASE WHILE RUNNING THE CODE, IF THE STEAMLIT WEBSIITE IN THE LOCAL TUNNEL SHOWS ANY ERROR IN LOADING THE DASHBOARD ,GRAPHS OR KEYMETRICS IN RED COLOUR, TRY CLICKING THE LINK 2-3 TIMES AFTER CLOSING THE TAB..UNTIL EVERY METRICS SHOW PERFECTLY WITHOUT ANY ERRORS. MAKE SURE UR INTERNET CONNECTION IS STABLE.. IT SHOULD WORK WITHIN 3 MINUTES FOR TRYING**
+Open Google Colab
+Upload:
+healthcare1_(1).ipynb
+HHS_Unaccompanied_Alien_Children_Program.csv
+
+Run all cells
+
+Access dashboard:
+Copy IP from output
+Open Localtunnel link
+Paste IP → Submit
+
+Output:
+Clean dataset (UAC_Clean_Final.csv)
+Generated streamlit_app.py
+Streamlit dashboard
+
+
+📁 Project Structure
+├── HHS_Unaccompanied_Alien_Children_Program.csv   # Raw dataset
+├── UAC_Clean_Final.csv                           # Clean dataset
+├── healthcare1_(1).ipynb                         # Main pipeline notebook (ETL + generation)
+├── streamlit_app.py                              # Dashboard app
+├── steamlit_interface_hhs/                       # UI / interface components & assets
+├── requirements.txt                              # Dependencies
+├── README.md                                     # Documentationn
+├──medium EDA link                                #project report
+
+📊 Outputs
+ 📄 Clean dataset (UAC_Clean_Final.csv)
+ 📊 Interactive dashboard
+
+📌 Use Cases
+-Capacity planning
+-Operational monitoring
+-Data engineering showcase
+
+👨‍💻 Author
+Vaishakh Sivarajan
+
